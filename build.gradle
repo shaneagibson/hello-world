@@ -1,0 +1,76 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE")
+        classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.22.1")
+        classpath("org.ajoberstar:grgit:1.1.0")
+    }
+}
+
+plugins {
+    id 'java'
+    id 'com.palantir.docker' version '0.22.1'
+    id 'org.springframework.boot' version '2.0.3.RELEASE'
+}
+
+ext {
+    git = org.ajoberstar.grgit.Grgit.open(file('.'))
+    revision = git.head().abbreviatedId
+}
+
+bootJar {
+    baseName = 'hello-world'
+    version = "1.0.${revision}"
+}
+
+group 'microservice'
+version '1.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web:2.0.3.RELEASE') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+    compile('net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1')
+    compile('org.apache.commons:commons-lang3:3.7')
+    compile('commons-io:commons-io:2.6')
+    compile('com.fasterxml.jackson.module:jackson-modules-java8:2.9.6')
+    testCompile('org.springframework.boot:spring-boot-starter-test:2.0.3.RELEASE')
+    testCompile('junit:junit:4.12')
+    testCompile('org.junit.jupiter:junit-jupiter-params:5.1.0')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.1.0')
+    testRuntimeOnly('org.junit.vintage:junit-vintage-engine:5.1.0')
+}
+
+docker {
+    name "${project.group}/${bootJar.baseName}:${bootJar.version}"
+    files bootJar.archivePath
+    buildArgs([
+            JAR_FILE: "${bootJar.archiveName}",
+            VERSION : "${bootJar.version}"
+    ])
+}
+
+task dockerImage {
+    doLast {
+        println docker.name
+    }
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+    useJUnitPlatform()
+}
