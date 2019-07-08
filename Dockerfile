@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11
+FROM adoptopenjdk/openjdk11:jdk-11.0.3_7-slim
 
 ARG JAR_FILE
 ARG VERSION
