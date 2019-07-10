@@ -9,4 +9,4 @@ EXPOSE 8080
 
 COPY "${JAR_FILE}" /microservice/app.jar
 
-ENTRYPOINT java -jar /microservice/app.jar -Dapp.version=${VERSION}
+ENTRYPOINT java -Dapp.version=${VERSION} -jar /microservice/app.jar
