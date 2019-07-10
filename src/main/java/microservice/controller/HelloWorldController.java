@@ -19,7 +19,7 @@ public class HelloWorldController extends AbstractController {
     @ResponseBody
     @ResponseStatus(OK)
     public Message helloWorld() {
-        return new Message("Hello, World!");
+        return new Message("Hello, World!!!");
     }
 
 }

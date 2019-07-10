@@ -23,7 +23,7 @@ class HelloWorldControllerTest {
     void shouldSayHelloWorld() {
         final ResponseEntity<String> response = restTemplate.getForEntity("/hello-world", String.class);
         assertEquals(OK, response.getStatusCode());
-        assertEquals("{\"text\":\"Hello, World!\"}", response.getBody());
+        assertEquals("{\"text\":\"Hello, World!!!\"}", response.getBody());
 
     }
 
