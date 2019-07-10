@@ -1,3 +1,3 @@
 #!/bin/bash -e
 
-./gradlew docker --stacktrace
+./gradlew docker
