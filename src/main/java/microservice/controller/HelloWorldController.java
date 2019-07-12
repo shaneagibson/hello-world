@@ -15,10 +15,10 @@ public class HelloWorldController extends AbstractController {
         super(LoggerFactory.getLogger(HelloWorldController.class));
     }
 
-    @RequestMapping(method = GET, path = "/hello-world", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = GET, path = "/message", produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus(OK)
-    public Message helloWorld() {
+    public Message sayHelloWorld() {
         return new Message("Hello, World!!!");
     }
 
