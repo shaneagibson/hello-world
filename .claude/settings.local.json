@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:plugins.gradle.org)",
+      "WebFetch(domain:docs.gatling.io)",
+      "WebFetch(domain:mvnrepository.com)",
+      "WebFetch(domain:alexanderobregon.substack.com)",
+      "WebFetch(domain:itnext.io)",
+      "WebFetch(domain:blog.gyri.tech)",
+      "WebFetch(domain:springdoc.org)",
+      "WebFetch(domain:stevenpg.com)",
+      "WebFetch(domain:erichaag.dev)"
+    ]
+  }
+}

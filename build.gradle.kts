@@ -1,15 +1,15 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id("org.springframework.boot") version "3.2.2"
-    id("io.spring.dependency-management") version "1.1.4"
+    id("org.springframework.boot") version "4.0.3"
     kotlin("jvm") version "2.3.10"
-    kotlin("plugin.spring") version "1.9.22"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.5"
+    kotlin("plugin.spring") version "2.3.10"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("org.owasp.dependencycheck") version "12.2.0"
-    id("com.github.jk1.dependency-license-report") version "2.5"
-    id("org.cyclonedx.bom") version "1.8.2"
-    id("io.gatling.gradle") version "3.10.3.1"
+    id("com.github.jk1.dependency-license-report") version "3.1.1"
+    id("org.cyclonedx.bom") version "3.1.1"
+    id("io.gatling.gradle") version "3.14.9.8"
     jacoco
 }
 
@@ -25,11 +25,12 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation(platform(SpringBootPlugin.BOM_COORDINATES))
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // API Contract Testing
@@ -38,7 +39,7 @@ dependencies {
     testImplementation("com.atlassian.oai:swagger-request-validator-restassured:2.40.0")
 
     // Detekt plugins for enhanced security analysis
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
 }
 
 kotlin {
@@ -76,7 +77,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 }
 
 jacoco {
-    toolVersion = "0.8.11"
+    toolVersion = "0.8.14"
 }
 
 tasks.test {
