@@ -54,7 +54,7 @@ tasks.withType<Test> {
 }
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    version.set("1.1.1")
+    version.set("1.8.0")
     android.set(false)
     outputToConsole.set(true)
     ignoreFailures.set(false)
