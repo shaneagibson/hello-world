@@ -175,6 +175,7 @@ dependencyCheck {
     formats = listOf("HTML", "JSON", "SARIF")
     failBuildOnCVSS = 7.0f
     suppressionFile = "$projectDir/dependency-check-suppressions.xml"
+    data.directory = "${System.getProperty("user.home")}/.gradle/dependency-check-data"
     analyzers.assemblyEnabled = false
     analyzers.nugetconfEnabled = false
     analyzers.nodeAudit.enabled = false

@@ -81,6 +81,14 @@ jobs:
         sarif_file: build/reports/semgrep.sarif
         category: semgrep
 
+    - name: Cache OWASP Dependency-Check NVD data
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle/dependency-check-data
+        key: dependency-check-${{ runner.os }}-${{ github.run_id }}
+        restore-keys: |
+          dependency-check-${{ runner.os }}-
+
     - name: Run OWASP Dependency-Check
       run: ./gradlew dependencyCheckAnalyze
       env:
