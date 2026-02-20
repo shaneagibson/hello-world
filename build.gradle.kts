@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.springframework.boot") version "3.2.2"
@@ -42,10 +41,10 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "25"
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xjsr305=strict")
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("25"))
     }
 }
 
@@ -146,14 +145,14 @@ dependencyCheck {
     suppressionFile = "$projectDir/dependency-check-suppressions.xml"
     analyzers.assemblyEnabled = false
     analyzers.nugetconfEnabled = false
-    analyzers.nodeEnabled = false
+    analyzers.nodeAuditEnabled = false
     nvd.apiKey = System.getenv("NVD_API_KEY") ?: ""
 }
 
 licenseReport {
     outputDir = layout.buildDirectory.dir("reports/licenses").get().asFile.path
     renderers =
-        arrayOf(
+        arrayOf<com.github.jk1.license.render.ReportRenderer>(
             com.github.jk1.license.render.JsonReportRenderer(),
             com.github.jk1.license.render.CsvReportRenderer(),
             com.github.jk1.license.render.InventoryHtmlReportRenderer(),
