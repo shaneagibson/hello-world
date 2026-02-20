@@ -29,6 +29,7 @@ jobs:
         GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
     - name: Set up JDK 25 for compilation toolchain
+      id: setup-jdk25
       uses: actions/setup-java@v4
       with:
         java-version: '25'
@@ -63,12 +64,22 @@ jobs:
         category: spotbugs
 
     - name: Run Semgrep SAST
-      uses: returntocorp/semgrep-action@v1
+      run: |
+        python3 -m pip install semgrep
+        semgrep scan \
+          --config p/security-audit \
+          --config p/kotlin \
+          --config p/owasp-top-ten \
+          --sarif \
+          --output build/reports/semgrep.sarif \
+          --error
+
+    - name: Upload Semgrep SARIF report
+      uses: github/codeql-action/upload-sarif@v4
+      if: always()
       with:
-        config: >-
-          p/security-audit
-          p/kotlin
-          p/owasp-top-ten
+        sarif_file: build/reports/semgrep.sarif
+        category: semgrep
 
     - name: Run OWASP Dependency-Check
       run: ./gradlew dependencyCheckAnalyze
@@ -109,7 +120,7 @@ jobs:
 
     - name: Start application for API contract testing
       run: |
-        java -jar build/libs/hello-world-0.0.1-SNAPSHOT.jar &
+        ${{ steps.setup-jdk25.outputs.path }}/bin/java -jar build/libs/hello-world-0.0.1-SNAPSHOT.jar &
         APP_PID=$!
         echo "APP_PID=$APP_PID" >> $GITHUB_ENV
         # Wait for application to start

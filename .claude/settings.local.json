@@ -17,7 +17,10 @@
       "WebFetch(domain:central.sonatype.com)",
       "WebFetch(domain:repo1.maven.org)",
       "Bash(jar xf:*)",
-      "Bash(jar tf:*)"
+      "Bash(jar tf:*)",
+      "WebFetch(domain:docs.gradle.org)",
+      "Bash(/usr/libexec/java_home:*)",
+      "WebFetch(domain:semgrep.dev)"
     ]
   }
 }
