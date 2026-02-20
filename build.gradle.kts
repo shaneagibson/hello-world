@@ -53,9 +53,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 
     // API Contract Testing
-    testImplementation("io.rest-assured:rest-assured:5.4.0")
-    testImplementation("io.rest-assured:kotlin-extensions:5.4.0")
-    testImplementation("com.atlassian.oai:swagger-request-validator-restassured:2.40.0")
+    testImplementation("io.rest-assured:rest-assured:6.0.0")
+    testImplementation("io.rest-assured:kotlin-extensions:6.0.0")
+    testImplementation("com.atlassian.oai:swagger-request-validator-restassured:2.46.0")
 
     // SpotBugs security analysis
     spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0")
