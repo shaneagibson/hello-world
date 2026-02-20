@@ -1,0 +1,4 @@
+# Add patterns or file paths to ignore false positives
+# Example:
+# path/to/file.txt
+# **/*test*.kt

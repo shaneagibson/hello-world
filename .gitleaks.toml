@@ -1,0 +1,26 @@
+# Gitleaks configuration file
+# See https://github.com/gitleaks/gitleaks#configuration for more options
+
+title = "Gitleaks Configuration for Hello World Spring Boot App"
+
+[extend]
+# Use the default gitleaks configuration as a base
+useDefault = true
+
+[allowlist]
+description = "Allowlist for false positives"
+paths = [
+    # Add paths to exclude from scanning
+    '''\.gitleaksignore''',
+    '''gradlew\.bat''',
+]
+
+# Example: Allow specific patterns
+# regexes = [
+#     '''example-safe-pattern''',
+# ]
+
+# Example: Allow specific commits
+# commits = [
+#     '''commit-hash-to-allow''',
+# ]

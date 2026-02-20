@@ -1,0 +1,72 @@
+# Ignore build artifacts
+build/
+target/
+.gradle/
+*.jar
+*.war
+
+# Ignore IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Ignore version control
+.git/
+.gitignore
+.gitattributes
+
+# Ignore CI/CD files
+.github/
+.gitlab-ci.yml
+
+# Ignore documentation
+README.md
+*.md
+docs/
+
+# Ignore test files (tests run in CI, not during Docker build)
+**/test/
+**/*Test.kt
+**/*Tests.kt
+
+# Ignore security scanning configs
+detekt.yml
+detekt-baseline.xml
+.gitleaks.toml
+.gitleaksignore
+dependency-check-suppressions.xml
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore Gradle wrapper (will use container's gradle)
+gradlew
+gradlew.bat
+
+# Ignore Helm charts
+helm/
+charts/
+
+# Ignore scripts
+scripts/
+
+# Ignore hooks
+hooks/

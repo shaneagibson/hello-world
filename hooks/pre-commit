@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Pre-commit hook for running security checks, SAST, and linting
+
+echo "Running secret scanning..."
+
+# Check if gitleaks is installed
+if ! command -v gitleaks &> /dev/null; then
+    echo ""
+    echo "⚠️  Warning: gitleaks is not installed. Skipping secret scanning."
+    echo ""
+    echo "To install gitleaks:"
+    echo "  macOS:   brew install gitleaks"
+    echo "  Linux:   https://github.com/gitleaks/gitleaks#installing"
+    echo "  Windows: https://github.com/gitleaks/gitleaks#installing"
+    echo ""
+else
+    # Run gitleaks on staged files
+    gitleaks protect --staged --verbose
+
+    # Capture the exit code
+    GITLEAKS_EXIT_CODE=$?
+
+    if [ $GITLEAKS_EXIT_CODE -ne 0 ]; then
+        echo ""
+        echo "❌ Secret scanning failed! Potential secrets detected."
+        echo ""
+        echo "Review the output above and remove any secrets before committing."
+        echo "If this is a false positive, you can:"
+        echo "  1. Add the file/pattern to .gitleaksignore"
+        echo "  2. Use inline comments to ignore specific lines"
+        echo ""
+        exit 1
+    fi
+
+    echo "✅ Secret scanning passed!"
+fi
+
+echo ""
+echo "Running ktlint checks..."
+
+# Run ktlint check
+./gradlew ktlintCheck
+
+# Capture the exit code
+KTLINT_EXIT_CODE=$?
+
+if [ $KTLINT_EXIT_CODE -ne 0 ]; then
+    echo ""
+    echo "❌ ktlint check failed!"
+    echo ""
+    echo "To automatically fix formatting issues, run:"
+    echo "  ./gradlew ktlintFormat"
+    echo ""
+    echo "Then stage the changes and commit again."
+    exit 1
+fi
+
+echo "✅ ktlint check passed!"
+echo ""
+echo "Running Detekt SAST..."
+
+# Run Detekt static analysis
+./gradlew detekt
+
+# Capture the exit code
+DETEKT_EXIT_CODE=$?
+
+if [ $DETEKT_EXIT_CODE -ne 0 ]; then
+    echo ""
+    echo "❌ Detekt SAST check failed!"
+    echo ""
+    echo "Review the issues in the output above."
+    echo "Reports are available at:"
+    echo "  build/reports/detekt/detekt.html"
+    echo ""
+    echo "To create a baseline (not recommended for new issues):"
+    echo "  ./gradlew detektBaseline"
+    echo ""
+    exit 1
+fi
+
+echo "✅ Detekt SAST check passed!"
+echo ""
+echo "✅ All pre-commit checks passed!"
+exit 0

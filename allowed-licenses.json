@@ -1,0 +1,61 @@
+{
+  "allowedLicenses": [
+    {
+      "moduleLicense": "Apache License, Version 2.0"
+    },
+    {
+      "moduleLicense": "Apache-2.0"
+    },
+    {
+      "moduleLicense": "The Apache Software License, Version 2.0"
+    },
+    {
+      "moduleLicense": "MIT License"
+    },
+    {
+      "moduleLicense": "MIT"
+    },
+    {
+      "moduleLicense": "BSD License"
+    },
+    {
+      "moduleLicense": "BSD 3-Clause"
+    },
+    {
+      "moduleLicense": "BSD 2-Clause"
+    },
+    {
+      "moduleLicense": "Eclipse Public License 1.0"
+    },
+    {
+      "moduleLicense": "Eclipse Public License 2.0"
+    },
+    {
+      "moduleLicense": "EPL-1.0"
+    },
+    {
+      "moduleLicense": "EPL-2.0"
+    },
+    {
+      "moduleLicense": "CDDL"
+    },
+    {
+      "moduleLicense": "CDDL + GPLv2 with classpath exception"
+    },
+    {
+      "moduleLicense": "GNU Lesser General Public License"
+    },
+    {
+      "moduleLicense": "LGPL"
+    },
+    {
+      "moduleLicense": "Public Domain"
+    },
+    {
+      "moduleLicense": "Creative Commons Zero"
+    },
+    {
+      "moduleLicense": "CC0"
+    }
+  ]
+}
