@@ -147,6 +147,7 @@ dependencyCheck {
     analyzers.assemblyEnabled = false
     analyzers.nugetconfEnabled = false
     analyzers.nodeEnabled = false
+    nvd.apiKey = System.getenv("NVD_API_KEY") ?: ""
 }
 
 licenseReport {
