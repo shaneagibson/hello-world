@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  GRADLE_OPTS: "--enable-native-access=ALL-UNNAMED"
+
 jobs:
   build:
     runs-on: ubuntu-latest
