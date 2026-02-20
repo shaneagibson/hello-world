@@ -28,8 +28,7 @@ class HelloWorldLoadTest : Simulation() {
                     .get("/hello/world")
                     .check(status().`is`(200))
                     .check(jsonPath("$.message").`is`("Hello, World!")),
-            )
-            .pause(Duration.ofMillis(100), Duration.ofMillis(500))
+            ).pause(Duration.ofMillis(100), Duration.ofMillis(500))
 
     private val healthCheckScenario =
         scenario("Health Check Load Test")
@@ -37,8 +36,7 @@ class HelloWorldLoadTest : Simulation() {
                 http("GET /actuator/health")
                     .get("/actuator/health")
                     .check(status().`is`(200)),
-            )
-            .pause(Duration.ofMillis(100))
+            ).pause(Duration.ofMillis(100))
 
     init {
         // Load test configuration
@@ -48,13 +46,11 @@ class HelloWorldLoadTest : Simulation() {
                 .injectOpen(
                     rampUsersPerSec(0.0).to(10.0).during(Duration.ofSeconds(30)),
                     constantUsersPerSec(10.0).during(Duration.ofSeconds(60)),
-                )
-                .protocols(httpProtocol),
+                ).protocols(httpProtocol),
             healthCheckScenario
                 .injectOpen(
                     constantUsersPerSec(2.0).during(Duration.ofSeconds(90)),
-                )
-                .protocols(httpProtocol),
+                ).protocols(httpProtocol),
         ).assertions(
             global().responseTime().percentile(95.0).lt(100),
             global().successfulRequests().percent().gt(99.0),

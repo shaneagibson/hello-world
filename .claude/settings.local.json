@@ -11,7 +11,8 @@
       "WebFetch(domain:blog.gyri.tech)",
       "WebFetch(domain:springdoc.org)",
       "WebFetch(domain:stevenpg.com)",
-      "WebFetch(domain:erichaag.dev)"
+      "WebFetch(domain:erichaag.dev)",
+      "WebFetch(domain:jeremylong.github.io)"
     ]
   }
 }

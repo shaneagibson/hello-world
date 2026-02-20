@@ -34,11 +34,12 @@ class HelloWorldStressTest : Simulation() {
         // Gradually increase load to find breaking point
         // Ramp up to 500 concurrent users over 2 minutes
         setUp(
-            stressScenario.injectOpen(
-                rampUsersPerSec(0.0).to(50.0).during(Duration.ofSeconds(60)),
-                constantUsersPerSec(50.0).during(Duration.ofSeconds(60)),
-                rampUsersPerSec(50.0).to(100.0).during(Duration.ofSeconds(60)),
-            ).protocols(httpProtocol),
+            stressScenario
+                .injectOpen(
+                    rampUsersPerSec(0.0).to(50.0).during(Duration.ofSeconds(60)),
+                    constantUsersPerSec(50.0).during(Duration.ofSeconds(60)),
+                    rampUsersPerSec(50.0).to(100.0).during(Duration.ofSeconds(60)),
+                ).protocols(httpProtocol),
         ).assertions(
             global().responseTime().percentile(99.0).lt(500),
             global().successfulRequests().percent().gt(95.0),

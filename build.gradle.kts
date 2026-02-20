@@ -147,7 +147,7 @@ dependencyCheck {
     suppressionFile = "$projectDir/dependency-check-suppressions.xml"
     analyzers.assemblyEnabled = false
     analyzers.nugetconfEnabled = false
-    analyzers.nodeAuditEnabled = false
+    analyzers.nodeAudit.enabled = false
     nvd.apiKey = System.getenv("NVD_API_KEY") ?: ""
 }
 
