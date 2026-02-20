@@ -1,7 +1,7 @@
 # Multi-stage Dockerfile for Hello World Spring Boot Application
 
 # Stage 1: Build
-FROM gradle:8.5-jdk17 AS build
+FROM gradle:8.5-jdk21 AS build
 WORKDIR /app
 
 # Copy Gradle files first for better layer caching
@@ -18,7 +18,7 @@ COPY src ./src
 RUN gradle bootJar --no-daemon -x test
 
 # Stage 2: Runtime
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Create non-root user for security

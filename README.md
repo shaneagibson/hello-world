@@ -8,7 +8,7 @@ A simple Spring Boot REST API that exposes a single endpoint returning a "Hello,
 - **Spring Boot 3.2.2** - Application framework
 - **Kotlin 1.9.22** - Programming language
 - **Gradle 8.5** - Build tool (Kotlin DSL)
-- **Java 17** - Runtime environment
+- **Java 21** - Runtime environment
 - **SpringDoc OpenAPI 2.3.0** - API documentation and Swagger UI
 
 ### Security & Quality
@@ -22,7 +22,7 @@ A simple Spring Boot REST API that exposes a single endpoint returning a "Hello,
 
 ## Prerequisites
 
-- JDK 17 or higher
+- JDK 21 or higher
 - Gradle 8.5+ (or use the included Gradle wrapper)
 - Gitleaks (optional, for secret scanning) - [Installation Guide](https://github.com/gitleaks/gitleaks#installing)
 
