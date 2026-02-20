@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 class OpenApiController(
     @Value("classpath:openapi.yaml") private val specResource: Resource,
 ) {
-    private val spec: String by lazy { specResource.inputStream.bufferedReader().readText() }
+    private val spec: String by lazy { String(specResource.contentAsByteArray, Charsets.UTF_8) }
 
     @GetMapping("/api-docs", produces = ["text/yaml"])
     fun apiDocs() = spec

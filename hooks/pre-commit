@@ -79,5 +79,26 @@ fi
 
 echo "✅ SpotBugs SAST check passed!"
 echo ""
+echo "Running JaCoCo test coverage verification..."
+
+# Run tests and verify coverage thresholds
+./gradlew test jacocoTestCoverageVerification
+
+# Capture the exit code
+JACOCO_EXIT_CODE=$?
+
+if [ $JACOCO_EXIT_CODE -ne 0 ]; then
+    echo ""
+    echo "❌ JaCoCo coverage verification failed!"
+    echo ""
+    echo "Coverage has dropped below the required thresholds."
+    echo "Reports are available at:"
+    echo "  build/reports/jacoco/test/html/index.html"
+    echo ""
+    exit 1
+fi
+
+echo "✅ JaCoCo coverage verification passed!"
+echo ""
 echo "✅ All pre-commit checks passed!"
 exit 0

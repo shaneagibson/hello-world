@@ -20,7 +20,11 @@
       "Bash(jar tf:*)",
       "WebFetch(domain:docs.gradle.org)",
       "Bash(/usr/libexec/java_home:*)",
-      "WebFetch(domain:semgrep.dev)"
+      "WebFetch(domain:semgrep.dev)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(./gradlew test:*)"
     ]
   }
 }
