@@ -1,3 +1,9 @@
+import com.github.jk1.license.render.CsvReportRenderer
+import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.render.JsonReportRenderer
+import com.github.jk1.license.render.ReportRenderer
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.Companion
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
@@ -45,7 +51,7 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xjsr305=strict")
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("25"))
+        jvmTarget.set(JvmTarget.fromTarget("25"))
     }
 }
 
@@ -152,12 +158,16 @@ dependencyCheck {
 }
 
 licenseReport {
-    outputDir = layout.buildDirectory.dir("reports/licenses").get().asFile.path
+    outputDir =
+        layout.buildDirectory
+            .dir("reports/licenses")
+            .get()
+            .asFile.path
     renderers =
-        arrayOf<com.github.jk1.license.render.ReportRenderer>(
-            com.github.jk1.license.render.JsonReportRenderer(),
-            com.github.jk1.license.render.CsvReportRenderer(),
-            com.github.jk1.license.render.InventoryHtmlReportRenderer(),
+        arrayOf<ReportRenderer>(
+            JsonReportRenderer(),
+            CsvReportRenderer(),
+            InventoryHtmlReportRenderer(),
         )
     allowedLicensesFile = file("$projectDir/allowed-licenses.json")
 }

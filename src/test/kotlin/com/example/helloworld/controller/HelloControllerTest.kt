@@ -13,7 +13,8 @@ class HelloControllerTest {
 
     @Test
     fun `helloWorld should return Hello World message`() {
-        mockMvc.get("/hello/world")
+        mockMvc
+            .get("/hello/world")
             .andExpect {
                 status { isOk() }
                 content { contentType("application/json") }
@@ -23,7 +24,8 @@ class HelloControllerTest {
 
     @Test
     fun `helloWorld should return 200 status`() {
-        mockMvc.get("/hello/world")
+        mockMvc
+            .get("/hello/world")
             .andExpect {
                 status { isOk() }
             }
