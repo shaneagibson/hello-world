@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "2.3.10"
     kotlin("plugin.spring") version "2.3.10"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("io.gitlab.arturbosch.detekt") version "2.0.0-alpha.2"
     id("org.owasp.dependencycheck") version "12.2.0"
     id("com.github.jk1.dependency-license-report") version "3.1.1"
     id("org.cyclonedx.bom") version "3.1.1"
