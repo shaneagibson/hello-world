@@ -150,6 +150,10 @@ dependencyCheck {
     nvd.apiKey = System.getenv("NVD_API_KEY") ?: ""
 }
 
+tasks.withType<org.owasp.dependencycheck.gradle.tasks.Analyze>().configureEach {
+    jvmArgs("-Xmx2g")
+}
+
 licenseReport {
     outputDir = "$buildDir/reports/licenses"
     renderers =
