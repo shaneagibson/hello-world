@@ -6,12 +6,21 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.Companion
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
+buildscript {
+    repositories { mavenCentral() }
+    // plexus-utils 4.x moved XmlPullParserException to plexus-xml; add it so the
+    // CycloneDX plugin's classloader (which delegates to this script classloader) can find it.
+    dependencies {
+        classpath("org.codehaus.plexus:plexus-xml:3.0.1")
+    }
+}
+
 plugins {
     id("org.springframework.boot") version "4.0.3"
     kotlin("jvm") version "2.3.10"
     kotlin("plugin.spring") version "2.3.10"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("com.github.spotbugs") version "6.4.8"
     id("org.owasp.dependencycheck") version "12.2.0"
     id("com.github.jk1.dependency-license-report") version "3.1.1"
     id("org.cyclonedx.bom") version "3.1.1"
@@ -23,7 +32,9 @@ group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_25
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
 }
 
 repositories {
@@ -38,14 +49,16 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 
     // API Contract Testing
     testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("io.rest-assured:kotlin-extensions:5.4.0")
     testImplementation("com.atlassian.oai:swagger-request-validator-restassured:2.40.0")
 
-    // Detekt plugins for enhanced security analysis
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
+    // SpotBugs security analysis
+    spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0")
 }
 
 kotlin {
@@ -66,20 +79,32 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     ignoreFailures.set(false)
 }
 
-detekt {
-    buildUponDefaultConfig = true
-    allRules = false
-    config.setFrom(files("$projectDir/detekt.yml"))
-    baseline = file("$projectDir/detekt-baseline.xml")
+spotbugs {
+    toolVersion = "4.9.8"
+    effort = com.github.spotbugs.snom.Effort.MAX
+    reportLevel = com.github.spotbugs.snom.Confidence.MEDIUM
+    ignoreFailures = false
 }
 
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-    jvmTarget = "22"
-    reports {
-        html.required.set(true)
-        xml.required.set(true)
-        txt.required.set(true)
-        sarif.required.set(true)
+tasks.spotbugsMain {
+    reports.create("sarif") {
+        required = true
+        outputLocation = layout.buildDirectory.file("reports/spotbugs/main/spotbugs.sarif")
+    }
+    reports.create("html") {
+        required = true
+        outputLocation = layout.buildDirectory.file("reports/spotbugs/main/spotbugs.html")
+    }
+}
+
+tasks.spotbugsTest {
+    reports.create("sarif") {
+        required = true
+        outputLocation = layout.buildDirectory.file("reports/spotbugs/test/spotbugs.sarif")
+    }
+    reports.create("html") {
+        required = true
+        outputLocation = layout.buildDirectory.file("reports/spotbugs/test/spotbugs.html")
     }
 }
 

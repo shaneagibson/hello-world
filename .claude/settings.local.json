@@ -12,7 +12,12 @@
       "WebFetch(domain:springdoc.org)",
       "WebFetch(domain:stevenpg.com)",
       "WebFetch(domain:erichaag.dev)",
-      "WebFetch(domain:jeremylong.github.io)"
+      "WebFetch(domain:jeremylong.github.io)",
+      "WebFetch(domain:rieckpil.de)",
+      "WebFetch(domain:central.sonatype.com)",
+      "WebFetch(domain:repo1.maven.org)",
+      "Bash(jar xf:*)",
+      "Bash(jar tf:*)"
     ]
   }
 }

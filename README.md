@@ -5,25 +5,26 @@ A simple Spring Boot REST API that exposes a single endpoint returning a "Hello,
 ## Technologies
 
 ### Core
-- **Spring Boot 3.2.2** - Application framework
-- **Kotlin 1.9.22** - Programming language
-- **Gradle 8.5** - Build tool (Kotlin DSL)
-- **Java 21** - Runtime environment
-- **SpringDoc OpenAPI 2.3.0** - API documentation and Swagger UI
+- **Spring Boot 4.0.3** - Application framework
+- **Kotlin 2.3.10** - Programming language
+- **Gradle 9.1.0** - Build tool (Kotlin DSL)
+- **Java 25** - Runtime environment
+- **SpringDoc OpenAPI 3.0.1** - API documentation and Swagger UI
 
 ### Security & Quality
-- **ktlint 1.1.1** - Code formatter and linter
-- **Detekt 1.23.5** - Kotlin static analysis and SAST
+- **ktlint 1.8.0** - Code formatter and linter
+- **SpotBugs 4.9.8** - JVM bytecode static analysis and SAST
+- **FindSecBugs 1.14.0** - SpotBugs security plugin
 - **Semgrep** - Multi-language SAST tool
 - **Gitleaks** - Secret scanning tool
-- **OWASP Dependency-Check 9.0.9** - Dependency vulnerability scanning
-- **Gradle License Report 2.5** - License compliance scanning
-- **JaCoCo 0.8.11** - Code coverage analysis
+- **OWASP Dependency-Check 12.2.0** - Dependency vulnerability scanning
+- **Gradle License Report 3.1.1** - License compliance scanning
+- **JaCoCo 0.8.14** - Code coverage analysis
 
 ## Prerequisites
 
-- JDK 21 or higher
-- Gradle 8.5+ (or use the included Gradle wrapper)
+- JDK 25 (compilation) and JDK 21 (Gradle daemon)
+- Gradle 9.1.0+ (or use the included Gradle wrapper)
 - Gitleaks (optional, for secret scanning) - [Installation Guide](https://github.com/gitleaks/gitleaks#installing)
 
 ## Project Structure
@@ -44,8 +45,6 @@ hello-world/
 │       │           └── HelloController.kt       # REST controller
 │       └── resources/
 │           └── application.properties           # Application configuration
-├── detekt.yml                          # Detekt configuration
-├── detekt-baseline.xml                 # Detekt baseline for suppressed issues
 ├── .gitleaks.toml                      # Gitleaks configuration
 ├── .gitleaksignore                     # Gitleaks ignore patterns
 ├── build.gradle.kts                    # Gradle build configuration
@@ -126,7 +125,7 @@ To automatically run security checks, SAST, and linting before each commit, inst
 Once installed, the following checks will run automatically before every commit:
 1. **Secret Scanning** (Gitleaks) - Detects hardcoded secrets
 2. **Code Formatting** (ktlint) - Ensures consistent code style
-3. **SAST** (Detekt) - Identifies security issues and code smells
+3. **SAST** (SpotBugs + FindSecBugs) - Identifies security issues and bugs
 
 If any check fails, the commit will be blocked until issues are resolved.
 
@@ -214,46 +213,20 @@ The GitHub Actions workflow automatically runs Gitleaks on all commits to preven
 
 This project uses multiple SAST tools to identify security vulnerabilities and code quality issues:
 
-### Detekt (Kotlin Static Analysis)
+### SpotBugs (JVM Bytecode Analysis)
 
-**Detekt** is a static code analysis tool for Kotlin that checks for code smells, complexity, and potential bugs including security issues.
+**SpotBugs** analyses compiled JVM bytecode to detect bugs and security vulnerabilities. The **FindSecBugs** plugin extends it with security-specific detectors covering OWASP Top 10 and more.
 
-#### Running Detekt
-
-Run Detekt analysis:
+#### Running SpotBugs
 
 ```bash
-./gradlew detekt
+./gradlew spotbugsMain spotbugsTest
 ```
 
 #### Viewing Reports
 
-After running Detekt, reports are available in multiple formats:
-
-- **HTML Report**: `build/reports/detekt/detekt.html` (open in browser)
-- **XML Report**: `build/reports/detekt/detekt.xml`
-- **SARIF Report**: `build/reports/detekt/detekt.sarif` (for GitHub Code Scanning)
-- **Text Report**: `build/reports/detekt/detekt.txt`
-
-#### Configuration
-
-Detekt is configured via `detekt.yml` with security-focused rules enabled including:
-
-- Potential bugs detection
-- Exception handling issues
-- Unsafe operations
-- Code complexity warnings
-- Security anti-patterns
-
-#### Managing False Positives
-
-To create a baseline for existing issues:
-
-```bash
-./gradlew detektBaseline
-```
-
-This creates/updates `detekt-baseline.xml` to suppress existing issues. Use this sparingly and only for legacy code.
+- **HTML Report**: `build/reports/spotbugs/main/spotbugs.html` (open in browser)
+- **SARIF Report**: `build/reports/spotbugs/main/spotbugs.sarif` (for GitHub Code Scanning)
 
 ### Semgrep (Multi-Language SAST)
 
@@ -267,13 +240,13 @@ Semgrep runs automatically in the CI pipeline and will fail the build if high-se
 
 ### Pre-commit SAST Checks
 
-Once you've installed the Git hooks with `./install-hooks.sh`, Detekt will automatically run before each commit to catch issues early.
+Once you've installed the Git hooks with `./install-hooks.sh`, SpotBugs will automatically run before each commit to catch issues early.
 
 ### SAST in CI/CD
 
-The GitHub Actions workflow runs both Detekt and Semgrep on every push and pull request:
+The GitHub Actions workflow runs both SpotBugs and Semgrep on every push and pull request:
 
-1. **Detekt** - Analyzes Kotlin code and uploads SARIF reports to GitHub Security
+1. **SpotBugs + FindSecBugs** - Analyses JVM bytecode and uploads SARIF reports to GitHub Security
 2. **Semgrep** - Scans for security vulnerabilities across the codebase
 
 Results are visible in the GitHub Security tab under Code Scanning Alerts.
@@ -284,7 +257,7 @@ This project includes a GitHub Actions workflow (`.github/workflows/ci.yml`) tha
 - Runs on push to `main` or `develop` branches
 - Runs on pull requests targeting `main` or `develop` branches
 - Performs secret scanning with Gitleaks
-- Runs SAST with Detekt and Semgrep
+- Runs SAST with SpotBugs and Semgrep
 - Runs ktlint code quality checks
 - Builds the application
 - Runs tests
