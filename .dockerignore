@@ -61,10 +61,6 @@ Thumbs.db
 gradlew
 gradlew.bat
 
-# Ignore Helm charts
-helm/
-charts/
-
 # Ignore scripts
 scripts/
 

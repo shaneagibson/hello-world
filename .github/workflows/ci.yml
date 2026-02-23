@@ -8,6 +8,7 @@ on:
 
 env:
   GRADLE_OPTS: "--enable-native-access=ALL-UNNAMED"
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
 
 jobs:
   build:
@@ -15,55 +16,58 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      packages: write
 
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    - name: Run Gitleaks Secret Scanning
+    - name: Secret scan
       uses: gitleaks/gitleaks-action@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
-    - name: Set up JDK 25 for compilation toolchain
+    - name: Set up JDK 25 (compilation toolchain)
       id: setup-jdk25
       uses: actions/setup-java@v4
       with:
         java-version: '25'
         distribution: 'temurin'
 
-    - name: Register JDK 25 as Gradle toolchain installation
+    - name: Register JDK 25 as Gradle toolchain
       run: mkdir -p ~/.gradle && echo "org.gradle.java.installations.paths=$JAVA_HOME" >> ~/.gradle/gradle.properties
 
-    - name: Set up JDK 21 for Gradle daemon
+    - name: Set up JDK 21 (Gradle daemon)
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Setup Gradle
+    - name: Set up Gradle
       uses: gradle/actions/setup-gradle@v3
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - name: Lint
+      run: |
+        chmod +x gradlew
+        ./gradlew ktlintCheck
 
-    - name: Run ktlint checks
-      run: ./gradlew ktlintCheck
+    - name: Build and test
+      run: ./gradlew build
 
-    - name: Run SpotBugs SAST
+    - name: SpotBugs analysis
       run: ./gradlew spotbugsMain spotbugsTest
 
-    - name: Upload SpotBugs SARIF report
+    - name: Upload SpotBugs SARIF
       uses: github/codeql-action/upload-sarif@v4
       if: always()
       with:
         sarif_file: build/reports/spotbugs/main/spotbugs.sarif
         category: spotbugs
 
-    - name: Run Semgrep SAST
+    - name: Semgrep analysis
       run: |
         python3 -m pip install semgrep
         semgrep scan \
@@ -74,14 +78,14 @@ jobs:
           --output build/reports/semgrep.sarif \
           --error
 
-    - name: Upload Semgrep SARIF report
+    - name: Upload Semgrep SARIF
       uses: github/codeql-action/upload-sarif@v4
       if: always()
       with:
         sarif_file: build/reports/semgrep.sarif
         category: semgrep
 
-    - name: Cache OWASP Dependency-Check NVD data
+    - name: Cache OWASP NVD data
       uses: actions/cache@v4
       with:
         path: ~/.gradle/dependency-check-data
@@ -89,12 +93,12 @@ jobs:
         restore-keys: |
           dependency-check-${{ runner.os }}-
 
-    - name: Run OWASP Dependency-Check
+    - name: OWASP dependency scan
       run: ./gradlew dependencyCheckAnalyze
       env:
         NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 
-    - name: Upload Dependency-Check report
+    - name: Upload OWASP report
       uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -102,17 +106,17 @@ jobs:
         path: build/reports/dependency-check-report.*
         retention-days: 30
 
-    - name: Upload Dependency-Check SARIF
+    - name: Upload OWASP SARIF
       uses: github/codeql-action/upload-sarif@v4
       if: always()
       with:
         sarif_file: build/reports/dependency-check-report.sarif
         category: dependency-check
 
-    - name: Generate License Report
-      run: ./gradlew generateLicenseReport
+    - name: Generate license report and SBOM
+      run: ./gradlew generateLicenseReport cyclonedxBom
 
-    - name: Upload License Report
+    - name: Upload license report
       uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -120,29 +124,22 @@ jobs:
         path: build/reports/licenses/
         retention-days: 30
 
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Build Docker image
+      run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
 
-    - name: Run tests
-      run: ./gradlew test
-
-    - name: Start application for API contract testing
+    - name: Start application
       run: |
-        ${{ steps.setup-jdk25.outputs.path }}/bin/java -jar build/libs/hello-world-0.0.1-SNAPSHOT.jar &
-        APP_PID=$!
-        echo "APP_PID=$APP_PID" >> $GITHUB_ENV
-        # Wait for application to start
-        timeout 60 bash -c 'until curl -f http://localhost:8080/actuator/health 2>/dev/null || curl -f http://localhost:8080/api-docs 2>/dev/null; do sleep 2; done'
-
-    - name: Set up Python for Schemathesis
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+        docker run -d --name hello-world \
+          -p 8080:8080 \
+          ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
     - name: Install Schemathesis
-      run: pip install schemathesis
+      run: python3 -m pip install schemathesis
 
-    - name: Run Schemathesis API Contract Tests
+    - name: Wait for application to start
+      run: timeout 60 bash -c 'until curl -sf http://localhost:8080/actuator/health; do sleep 2; done'
+
+    - name: API contract tests
       run: |
         schemathesis run http://localhost:8080/api-docs \
           --checks all \
@@ -150,18 +147,22 @@ jobs:
 
     - name: Stop application
       if: always()
-      run: |
-        if [ ! -z "$APP_PID" ]; then
-          kill $APP_PID || true
-        fi
+      run: docker stop hello-world && docker rm hello-world || true
 
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v4
-      if: success()
+    - name: Log in to GitHub Container Registry
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: docker/login-action@v3
       with:
-        name: hello-world-jar
-        path: build/libs/*.jar
-        retention-days: 30
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push Docker image
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: |
+        docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.IMAGE_NAME }}:latest
+        docker push ${{ env.IMAGE_NAME }}:latest
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
