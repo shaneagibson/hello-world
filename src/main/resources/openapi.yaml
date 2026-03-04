@@ -6,6 +6,20 @@ info:
   contact:
     name: API Support
 paths:
+  /version:
+    get:
+      tags:
+        - Version
+      summary: Get application version
+      description: Returns the current version of the application
+      operationId: version
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionResponse"
   /hello/world:
     get:
       tags:
@@ -22,6 +36,16 @@ paths:
                 $ref: "#/components/schemas/HelloResponse"
 components:
   schemas:
+    VersionResponse:
+      description: Application version response
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: string
+          description: Application version in the format 1.0.{git-hash}
+          example: "1.0.abc1234"
     HelloResponse:
       description: Hello World response
       type: object
