@@ -29,7 +29,11 @@ plugins {
 }
 
 group = "com.example"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.${providers.exec { commandLine("git", "rev-parse", "--short", "HEAD") }.standardOutput.asText.get().trim()}"
+
+springBoot {
+    buildInfo()
+}
 
 java {
     toolchain {

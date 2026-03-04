@@ -7,6 +7,7 @@ import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.specification.RequestSpecification
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.matchesPattern
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -32,6 +33,20 @@ class ApiContractTest {
             OpenApiValidationFilter(
                 "http://localhost:$port/api-docs",
             )
+    }
+
+    @Test
+    fun `GET version endpoint should comply with OpenAPI specification`() {
+        Given {
+            spec(requestSpec)
+            filter(validationFilter)
+        } When {
+            get("/version")
+        } Then {
+            statusCode(200)
+            contentType("application/json")
+            body("version", matchesPattern("1\\.0\\.[a-f0-9]+"))
+        }
     }
 
     @Test
