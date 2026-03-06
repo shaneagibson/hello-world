@@ -75,6 +75,10 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.bootJar {
+    archiveFileName.set("app.jar")
+}
+
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     version.set("1.8.0")
     android.set(false)
