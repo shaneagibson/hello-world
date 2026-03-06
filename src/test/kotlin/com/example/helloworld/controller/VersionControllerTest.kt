@@ -2,7 +2,7 @@ package com.example.helloworld.controller
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.willReturn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
@@ -20,7 +20,7 @@ class VersionControllerTest {
 
     @BeforeEach
     fun setup() {
-        given(buildProperties.version).willReturn("1.0.abc1234")
+        willReturn("1.0.abc1234").given(buildProperties).version
     }
 
     @Test
@@ -40,6 +40,17 @@ class VersionControllerTest {
             .get("/version")
             .andExpect {
                 status { isOk() }
+            }
+    }
+
+    @Test
+    fun `version should return unknown when build version is unavailable`() {
+        willReturn(null).given(buildProperties).version
+        mockMvc
+            .get("/version")
+            .andExpect {
+                status { isOk() }
+                jsonPath("$.version") { value("unknown") }
             }
     }
 }
